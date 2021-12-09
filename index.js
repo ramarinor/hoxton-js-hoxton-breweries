@@ -12,6 +12,7 @@ const filterByCityForm = document.querySelector("#filter-by-city-form");
 const listSection = document.querySelector(".list-section");
 const breweriesList = document.querySelector(".breweries-list");
 const filterByTypeSelect = document.querySelector("#filter-by-type");
+const clearAllBtn = document.querySelector(".clear-all-btn");
 const pagesSection = document.querySelector(".pages");
 
 let pageIterator = 1;
@@ -196,10 +197,19 @@ function listenToFilterByTypeSelect() {
 	});
 }
 
+function listenToClearAllBtn() {
+	clearAllBtn.addEventListener("click", () => {
+		state.page = 1;
+		state.selectedCities = [];
+		render();
+	});
+}
+
 function init() {
 	fetchAllBreweriesByState().then(() => {
 		listenToSelectStateForm();
 		listenToFilterByTypeSelect();
+		listenToClearAllBtn();
 	});
 }
 
