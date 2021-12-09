@@ -2,7 +2,8 @@ const state = {
 	breweries: [],
 	selectedState: null,
 	selectedBreweryType: "",
-	selectedCities: []
+	selectedCities: [],
+	page: 1
 };
 
 const selectStateForm = document.querySelector("#select-state-form");
@@ -11,6 +12,7 @@ const filterByCityForm = document.querySelector("#filter-by-city-form");
 const listSection = document.querySelector(".list-section");
 const breweriesList = document.querySelector(".breweries-list");
 const filterByTypeSelect = document.querySelector("#filter-by-type");
+const pagesSection = document.querySelector(".pages");
 
 let pageIterator = 1;
 // server functions
@@ -51,13 +53,16 @@ function getFilteredBreweries() {
 	if (state.selectedBreweryType !== "") {
 		filteredBreweries = filteredBreweries.filter((brewery) => brewery.brewery_type === state.selectedBreweryType);
 	}
+	if (state.selectedCities.length > 0) {
+		filteredBreweries = filteredBreweries.filter((brewery) => state.selectedCities.includes(brewery.city));
+	}
 
 	return filteredBreweries;
 }
 
 function getBreweriesToDisplay() {
 	let breweriesToDisplay = getFilteredBreweries();
-	breweriesToDisplay = breweriesToDisplay.slice(0, 10);
+	breweriesToDisplay = breweriesToDisplay.slice(10 * (state.page - 1), 10 * state.page);
 	return breweriesToDisplay;
 }
 
@@ -65,6 +70,7 @@ function getBreweriesToDisplay() {
 function render() {
 	renderFiltersSection();
 	renderBreweryList();
+	renderPagesSection();
 }
 function renderFiltersSection() {
 	if (state.breweries.length !== 0) {
@@ -79,6 +85,17 @@ function renderFiltersSection() {
 			inputEl.setAttribute("name", city);
 			inputEl.setAttribute("value", city.toLowerCase());
 			inputEl.setAttribute("id", city);
+			if (state.selectedCities.includes(city)) {
+				inputEl.checked = true;
+			}
+			inputEl.addEventListener("click", () => {
+				if (inputEl.checked) {
+					state.selectedCities.push(city);
+				} else {
+					state.selectedCities = state.selectedCities.filter((targetCity) => targetCity !== city);
+				}
+				render();
+			});
 
 			const labelEl = document.createElement("label");
 			labelEl.setAttribute("for", city);
@@ -141,10 +158,24 @@ function renderBreweryList() {
 	}
 }
 
+function renderPagesSection() {
+	pagesSection.innerHTML = "";
+	for (let i = 0; i < getFilteredBreweries().length / 10; i++) {
+		const buttonEL = document.createElement("button");
+		buttonEL.textContent = i + 1;
+		buttonEL.addEventListener("click", () => {
+			state.page = i + 1;
+			render();
+		});
+		pagesSection.append(buttonEL);
+	}
+}
+
 // listen function
 function listenToSelectStateForm() {
 	selectStateForm.addEventListener("submit", (event) => {
 		event.preventDefault();
+		state.page = 1;
 		state.selectedState = selectStateForm["select-state"].value;
 		state.breweries = [];
 		fetchAllBreweriesByState().then(() => {
@@ -154,6 +185,7 @@ function listenToSelectStateForm() {
 }
 function listenToFilterByTypeSelect() {
 	filterByTypeSelect.addEventListener("change", () => {
+		state.page = 1;
 		state.selectedBreweryType = filterByTypeSelect.value;
 		render();
 	});
