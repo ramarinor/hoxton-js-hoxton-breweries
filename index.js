@@ -89,6 +89,7 @@ function renderFiltersSection() {
 				inputEl.checked = true;
 			}
 			inputEl.addEventListener("click", () => {
+				state.page = 1;
 				if (inputEl.checked) {
 					state.selectedCities.push(city);
 				} else {
@@ -162,6 +163,9 @@ function renderPagesSection() {
 	pagesSection.innerHTML = "";
 	for (let i = 0; i < getFilteredBreweries().length / 10; i++) {
 		const buttonEL = document.createElement("button");
+		if (i === state.page - 1) {
+			buttonEL.disabled = true;
+		}
 		buttonEL.textContent = i + 1;
 		buttonEL.addEventListener("click", () => {
 			state.page = i + 1;
