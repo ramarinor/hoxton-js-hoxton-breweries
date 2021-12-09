@@ -184,9 +184,7 @@ function listenToSelectStateForm() {
 		state.selectedCities = [];
 		state.selectedState = selectStateForm["select-state"].value;
 		state.breweries = [];
-		fetchAllBreweriesByState().then(() => {
-			render();
-		});
+		fetchAllBreweriesByState();
 	});
 }
 function listenToFilterByTypeSelect() {
