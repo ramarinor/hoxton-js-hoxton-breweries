@@ -180,6 +180,7 @@ function listenToSelectStateForm() {
 	selectStateForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		state.page = 1;
+		state.selectedCities = [];
 		state.selectedState = selectStateForm["select-state"].value;
 		state.breweries = [];
 		fetchAllBreweriesByState().then(() => {
