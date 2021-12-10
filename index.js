@@ -3,7 +3,8 @@ const state = {
 	selectedState: null,
 	selectedBreweryType: "",
 	selectedCities: [],
-	page: 1
+	page: 1,
+	search: ""
 };
 
 const selectStateForm = document.querySelector("#select-state-form");
@@ -14,6 +15,7 @@ const breweriesList = document.querySelector(".breweries-list");
 const filterByTypeSelect = document.querySelector("#filter-by-type");
 const clearAllBtn = document.querySelector(".clear-all-btn");
 const pagesSection = document.querySelector(".pages");
+const searchForm = document.querySelector("#search-breweries-form");
 
 let pageIterator = 1;
 // server functions
@@ -59,6 +61,11 @@ function getFilteredBreweries() {
 		filteredBreweries = filteredBreweries.filter((brewery) => state.selectedCities.includes(brewery.city));
 	}
 
+	if (state.search !== "") {
+		filteredBreweries = filteredBreweries // force break
+			.filter((brewery) => brewery.name.toLowerCase().includes(state.search.toLowerCase()) || brewery.city.toLowerCase().includes(state.search.toLowerCase()));
+	}
+
 	return filteredBreweries;
 }
 
@@ -73,6 +80,7 @@ function render() {
 	renderFiltersSection();
 	renderBreweryList();
 	renderPagesSection();
+	renderSearchForm();
 }
 function renderFiltersSection() {
 	if (state.breweries.length !== 0) {
@@ -110,6 +118,10 @@ function renderFiltersSection() {
 		filterSectionEl.style.display = "none";
 	}
 }
+function renderSearchForm() {
+	searchForm["search-breweries"].value = state.search;
+}
+
 function renderBreweryList() {
 	if (state.breweries.length !== 0) {
 		listSection.style.display = "block";
@@ -186,6 +198,7 @@ function listenToSelectStateForm() {
 		state.selectedBreweryType = "";
 		state.selectedState = selectStateForm["select-state"].value;
 		state.breweries = [];
+		state.search = "";
 		fetchAllBreweriesByState();
 	});
 }
@@ -205,12 +218,20 @@ function listenToClearAllBtn() {
 	});
 }
 
-function init() {
-	fetchAllBreweriesByState().then(() => {
-		listenToSelectStateForm();
-		listenToFilterByTypeSelect();
-		listenToClearAllBtn();
+function listenToSearchForm() {
+	searchForm.addEventListener("submit", (event) => {
+		event.preventDefault();
+		state.search = searchForm["search-breweries"].value;
+		render();
 	});
+}
+
+function init() {
+	fetchAllBreweriesByState();
+	listenToSelectStateForm();
+	listenToFilterByTypeSelect();
+	listenToClearAllBtn();
+	listenToSearchForm();
 }
 
 init();
