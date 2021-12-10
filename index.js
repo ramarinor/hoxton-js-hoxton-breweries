@@ -78,7 +78,7 @@ function renderFiltersSection() {
 		filterSectionEl.style.display = "block";
 		filterByCityForm.innerHTML = "";
 		const cities = extractCitiesData();
-
+		filterByTypeSelect.value = state.selectedBreweryType;
 		for (const city of cities) {
 			const inputEl = document.createElement("input");
 			inputEl.setAttribute("type", "checkbox");
@@ -182,6 +182,7 @@ function listenToSelectStateForm() {
 		event.preventDefault();
 		state.page = 1;
 		state.selectedCities = [];
+		state.selectedBreweryType = "";
 		state.selectedState = selectStateForm["select-state"].value;
 		state.breweries = [];
 		fetchAllBreweriesByState();
