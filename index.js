@@ -41,6 +41,7 @@ function extractCitiesData() {
 			cities.push(brewery.city);
 		}
 	}
+	cities.sort();
 	return cities;
 }
 
